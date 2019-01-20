@@ -9,37 +9,94 @@
 library(keras)
 library(reticulate)
 library(R.utils)
+library(magick)
 
-temp <- tempfile() 
-urls <- c('https://nihcc.box.com/shared/static/vfk49d74nhbxq3nqjg0900w5nvkorp5c.gz',
-            'https://nihcc.box.com/shared/static/i28rlmbvmfjbl8p2n3ril0pptcmcu9d1.gz',
-            'https://nihcc.box.com/shared/static/f1t00wrtdk94satdfb9olcolqx20z2jp.gz',
-            'https://nihcc.box.com/shared/static/0aowwzs5lhjrceb3qp67ahp0rd1l1etg.gz',
-            'https://nihcc.box.com/shared/static/v5e3goj22zr6h8tzualxfsqlqaygfbsn.gz',
-               
-            'https://nihcc.box.com/shared/static/asi7ikud9jwnkrnkj99jnpfkjdes7l6l.gz',
-            'https://nihcc.box.com/shared/static/jn1b4mw4n6lnh74ovmcjb8y48h8xj07n.gz',
-            'https://nihcc.box.com/shared/static/tvpxmn7qyrgl0w8wfh9kqfjskv6nmm1j.gz',
-            'https://nihcc.box.com/shared/static/upyy3ml7qdumlgk2rfcvlb9k6gvqq2pj.gz',
-            'https://nihcc.box.com/shared/static/l6nilvfa9cg3s28tqv1qc1olm3gnz54p.gz',
-            'https://nihcc.box.com/shared/static/hhq8fkdgvcari67vfhs7ppg2w6ni4jze.gz',
-            'https://nihcc.box.com/shared/static/ioqwiy20ihqwyr8pf4c24eazhh281pbu.gz')
+#temp <- tempfile() 
+# urls <- c('https://nihcc.box.com/shared/static/vfk49d74nhbxq3nqjg0900w5nvkorp5c.gz',
+#             'https://nihcc.box.com/shared/static/i28rlmbvmfjbl8p2n3ril0pptcmcu9d1.gz',
+#             'https://nihcc.box.com/shared/static/f1t00wrtdk94satdfb9olcolqx20z2jp.gz',
+#             'https://nihcc.box.com/shared/static/0aowwzs5lhjrceb3qp67ahp0rd1l1etg.gz',
+#             'https://nihcc.box.com/shared/static/v5e3goj22zr6h8tzualxfsqlqaygfbsn.gz',
+#                
+#             'https://nihcc.box.com/shared/static/asi7ikud9jwnkrnkj99jnpfkjdes7l6l.gz',
+#             'https://nihcc.box.com/shared/static/jn1b4mw4n6lnh74ovmcjb8y48h8xj07n.gz',
+#             'https://nihcc.box.com/shared/static/tvpxmn7qyrgl0w8wfh9kqfjskv6nmm1j.gz',
+#             'https://nihcc.box.com/shared/static/upyy3ml7qdumlgk2rfcvlb9k6gvqq2pj.gz',
+#             'https://nihcc.box.com/shared/static/l6nilvfa9cg3s28tqv1qc1olm3gnz54p.gz',
+#             'https://nihcc.box.com/shared/static/hhq8fkdgvcari67vfhs7ppg2w6ni4jze.gz',
+#             'https://nihcc.box.com/shared/static/ioqwiy20ihqwyr8pf4c24eazhh281pbu.gz')
+# 
+# names <- C()
+# 
+# for (url in urls) {
+#   download.file(url, destfile = basename(url))
+# }
 
-names <- C()
+#data <- read.csv(untar(temp, "dataset_diabetes/diabetic_data.csv"), header = T, na.strings = c('?','None')) 
+#unlink(temp)
 
-for (url in urls) {
-  download.file(url, destfile = basename(url))
+setwd("/home/l1/Downloads/images_001/images/")
+
+file_list <- list.files()
+dataset <- image_read(file)
+
+for (file in file_list){
+  
+  # if the merged dataset doesn't exist, create it
+  if (!exists("dataset")){
+    dataset <- image_read(file)
+  }
+  
+  # if the merged dataset does exist, append to it
+  if (exists("dataset")){
+    temp_dataset <-image_read(file)
+    dataset<-rbind(dataset, temp_dataset)
+    rm(temp_dataset)
+  }
+  
 }
 
-data <- read.csv(untar(temp, "dataset_diabetes/diabetic_data.csv"), header = T, na.strings = c('?','None')) 
-unlink(temp)
 
+files <- list.files("/home/l1/Downloads/images_001/images")
+
+
+for (i in files){
+  data[i] <- image_read('/home/l1/Downloads/images_001/images/[\'i\']')
+}
+  
+  
+  if (!exist(data)){
+    data <- image_read("/home/l1/Downloads/images_001/images/$files")
+  }
+  if (exist(data)){
+    temp_data <- image_read("/home/l1/Downloads/images_001/images/$files")
+    data <-rbind(data, temp_data)
+    rm(temp_data)
+  }
+}
+
+
+
+img <- image_read("/home/l1/Downloads/images_001/images/00000001_000.png")
+image_info(data)
+data <- array_reshape(img, c(1, 1024*1024))
+  
+train_images <- array_reshape(train_images, c(60000, 28*28))
+train_images <- train_images/255
+
+  
 #Load data
-mnist <- dataset_mnist()
-train_images <- mnist$train$x
-train_labels <- mnist$train$y
-test_images <- mnist$test$x
-test_labels <- mnist$test$y
+
+#temp <- tempfile()
+# url is not working
+#bbox <- read.csv(download.file("https://nihcc.app.box.com/v/ChestXray-NIHCC/file/219760940956/BBox_List_2017.csv", temp), 
+                 #header = T)
+
+# mnist <- dataset_mnist()
+# train_images <- mnist$train$x
+# train_labels <- mnist$train$y
+# test_images <- mnist$test$x
+# test_labels <- mnist$test$y
 
 #Data Representation
 length(dim(train_images)) #axes
